@@ -1,0 +1,2 @@
+config :redbull, :required => [:sproutcore]
+
