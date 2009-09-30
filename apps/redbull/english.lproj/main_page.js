@@ -3,6 +3,8 @@
 // Copyright: ©2009 Mike Ball
 // ==========================================================================
 /*globals Redbull */
+require('embed');
+require('views/bespin');
 
 // This page describes the main user interface for your application.  
 Redbull.mainPage = SC.Page.design({
@@ -11,7 +13,7 @@ Redbull.mainPage = SC.Page.design({
   // Add childViews to this pane for views to display immediately on page 
   // load.
   mainPane: SC.MainPane.design({
-    childViews: 'fileList'.w(),
+    childViews: 'fileList bespin'.w(),
     
     fileList: SC.ScrollView.design({
       layout: { top: 0, bottom: 0, left: 0, width: 238 },
@@ -21,6 +23,11 @@ Redbull.mainPage = SC.Page.design({
         contentBinding: 'Redbull.filesController.arrangedObjects',
         selectionBinding: 'Redbull.filesController.selection'
      })
+    }),
+    
+    bespin: Redbull.BespinView.design({
+      layout: { left: 238, right: 0, top: 0, bottom: 0 },
+      contentBinding: 'Redbull.fileController.content'
     })
   })
 

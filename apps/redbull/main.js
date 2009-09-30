@@ -25,7 +25,8 @@ Redbull.main = function main() {
   // TODO: Set the content property on your primary controller
   // ex: .contactsController.set('content',.contacts);
   Redbull.listFiles();
-
+  this.bespinEditor = new bespin.editor.Component('editor', {language: "js",loadfromdiv: true});
+  
 } ;
 
 function main() { Redbull.main(); }

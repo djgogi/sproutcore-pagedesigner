@@ -12,27 +12,44 @@ require('core');
   @version 0.1
 */
 //files states
-Redbull.BUSY = 0x0002;
-Redbull.ERROR = 0x0003;
-Redbull.READY_PARTIAL = 0x0004;
-Redbull.READY_FULL = 0x0005;
-Redbull.EMPTY = 0x0001;
+Redbull.BUSY = "busy";
+Redbull.ERROR = "error";
+Redbull.READY_PARTIAL = "ready_partial";
+Redbull.READY_FULL = "ready_full";
+Redbull.EMPTY = "empty";
 
 
 Redbull.File = SC.Object.extend(
 /** @scope Redbull.File.prototype */ {
   
   refresh: function(){
-    var status = this.get('status');
-    switch(status){
+    var state = this.get('state');
+    switch(state){
       case Redbull.READY_PARTIAL:
       case Redbull.READY_FULL:
         Redbull.getFile(this);
+        this.set('state', Redbull.BUSY);
         break;
       case Redbull.BUSY:
       case Redbull.ERROR:
       case Redbull.EMPTY:
-        console.log("RedBull.File#refresh not handled in current state");
+        console.log("RedBull.File#refresh not handled in current state %@".fmt(state));
+        break;
+    }
+  },
+  
+  refreshComplete: function(body){
+    var state = this.get('state');
+    switch(state){
+      case Redbull.BUSY:
+      case Redbull.EMPTY:
+        this.set('body', body);
+        this.set('state', Redbull.READY_FULL);
+        break;
+      case Redbull.READY_FULL:
+      case Redbull.ERROR:
+      case Redbull.READY_PARTIAL:
+        console.log("RedBull.File#refresh not handled in current state %@".fmt(state));
         break;
     }
   },
@@ -53,7 +70,7 @@ Redbull.File = SC.Object.extend(
 
   init: function(){
     sc_super();
-    if(this.get('path')) this.set('status', Redbull.READY_PARTIAL);
+    if(this.get('path')) this.set('state', Redbull.READY_PARTIAL);
   }
 
 }) ;

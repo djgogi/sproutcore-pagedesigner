@@ -45,7 +45,7 @@ Redbull.mixin({
   
   _getCompleted: function(request, params){
     var file = params.file;
-    file.set('body', request.response());
+    file.refreshComplete(request.response());
     //TODO: set content type...
   }
   
