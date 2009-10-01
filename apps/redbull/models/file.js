@@ -15,21 +15,41 @@ require('core');
 Redbull.BUSY = "busy";
 Redbull.ERROR = "error";
 Redbull.READY_PARTIAL = "ready_partial";
-Redbull.READY_FULL = "ready_full";
 Redbull.EMPTY = "empty";
+Redbull.READY_CLEAN = "ready_clean";
+Redbull.READY_DIRTY = "ready_dirty";
 
 
 Redbull.File = SC.Object.extend(
 /** @scope Redbull.File.prototype */ {
   
+  commit: function(){
+    var state = this.get('state');
+    switch(state){
+      case Redbull.READY_DIRTY:
+      case Redbull.EMPTY:
+        Redbull.commitFile(this);
+        this.set('state', Redbull.BUSY);
+        break;
+      case Redbull.READY_PARTIAL:
+      case Redbull.BUSY:
+      case Redbull.ERROR:
+      case Redbull.READY_CLEAN:
+        console.log("RedBull.File#refresh not handled in current state %@".fmt(state));
+        break;
+    }
+  },
+ 
+  
   refresh: function(){
     var state = this.get('state');
     switch(state){
       case Redbull.READY_PARTIAL:
-      case Redbull.READY_FULL:
+      case Redbull.READY_CLEAN:
         Redbull.getFile(this);
         this.set('state', Redbull.BUSY);
         break;
+      case Redbull.READY_DIRTY:
       case Redbull.BUSY:
       case Redbull.ERROR:
       case Redbull.EMPTY:
@@ -38,16 +58,33 @@ Redbull.File = SC.Object.extend(
     }
   },
   
-  refreshComplete: function(body){
+  requestComplete: function(body){
     var state = this.get('state');
     switch(state){
       case Redbull.BUSY:
       case Redbull.EMPTY:
-        this.set('body', body);
-        this.set('state', Redbull.READY_FULL);
+        if(body) this.set('body', body);
+        this.set('state', Redbull.READY_CLEAN);
         break;
-      case Redbull.READY_FULL:
+      case Redbull.READY_CLEAN:
+      case Redbull.READY_DIRTY:
       case Redbull.ERROR:
+      case Redbull.READY_PARTIAL:
+        console.log("RedBull.File#refresh not handled in current state %@".fmt(state));
+        break;
+    }
+  },
+  
+  bodyChanged: function(){
+    var state = this.get('state');
+    switch(state){
+      case Redbull.EMPTY:
+      case Redbull.READY_CLEAN:
+      case Redbull.READY_DIRTY:
+        this.set('state', Redbull.READY_DIRTY);
+        break;
+      case Redbull.ERROR:
+      case Redbull.BUSY:
       case Redbull.READY_PARTIAL:
         console.log("RedBull.File#refresh not handled in current state %@".fmt(state));
         break;
@@ -65,8 +102,14 @@ Redbull.File = SC.Object.extend(
     }
   }.property('type').cacheable(),
   
-
-  status: Redbull.EMPTY,
+  isDirty: function(){
+    if(this.get('state') === Redbull.READY_DIRTY){
+      return YES;
+    }
+    else{
+      return NO;
+    }
+  }.property('state').cacheable(),
 
   init: function(){
     sc_super();

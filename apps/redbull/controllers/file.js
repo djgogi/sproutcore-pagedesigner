@@ -20,7 +20,17 @@ Redbull.fileController = SC.ObjectController.create(
   _content_observer: function(){
     var content = this.get('content');
     if(content.refresh && content.get('isFile')) content.refresh();
-  }.observes('content')
+  }.observes('content'),
+  
+  save: function(){
+    //TODO: some logic to determine which editor is open...
+    var content = this.get('content');
+    
+    if(content){
+     content.set('body',Redbull.bespinEditor.getContent());
+     content.commit(); 
+    }
+  }
   
   
 }) ;

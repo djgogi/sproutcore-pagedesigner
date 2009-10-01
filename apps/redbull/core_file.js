@@ -45,8 +45,21 @@ Redbull.mixin({
   
   _getCompleted: function(request, params){
     var file = params.file;
-    file.refreshComplete(request.response());
+    file.requestComplete(request.response());
     //TODO: set content type...
+  },
+  
+  commitFile: function(file){
+    if(!this._postRequest) this._postRequest = SC.Request.create({type: 'POST'});
+    this._postRequest.set('address', "/sproutcore/fs/%@?action=save".fmt(file.get('path')));
+    
+    this._postRequest.notify(this,this._commitCompleted, {file: file}).send(file.get('body'));
+    
+  },
+  
+  _commitCompleted: function(request, params){
+    var file = params.file;
+    file.requestComplete();
   }
   
 });
