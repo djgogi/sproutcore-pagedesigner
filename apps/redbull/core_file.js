@@ -51,7 +51,7 @@ Redbull.mixin({
   
   commitFile: function(file){
     if(!this._postRequest) this._postRequest = SC.Request.create({type: 'POST'});
-    this._postRequest.set('address', "/sproutcore/fs/%@?action=save".fmt(file.get('path')));
+    this._postRequest.set('address', "/sproutcore/fs/%@?action=overwrite".fmt(file.get('path')));
     
     this._postRequest.notify(this,this._commitCompleted, {file: file}).send(file.get('body'));
     

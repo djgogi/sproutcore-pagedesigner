@@ -19,7 +19,12 @@ Redbull.mainPage = SC.Page.design({
       anchorLocation: SC.ANCHOR_TOP,
       borderStyle: SC.BORDER_BOTTOM,
 
-      childViews: 'save'.w(),
+      childViews: 'save title'.w(),
+      
+      title: SC.LabelView.design({
+        layout: {centerX: 0, top: 4, height: 24, width: 150},
+        valueBinding: SC.Binding.oneWay('Redbull.fileController.name')
+      }),
       
       save: SC.ButtonView.design({
         title: 'Save',

@@ -113,7 +113,12 @@ Redbull.File = SC.Object.extend(
 
   init: function(){
     sc_super();
-    if(this.get('path')) this.set('state', Redbull.READY_PARTIAL);
+    if(this.get('path')){
+      this.set('state', Redbull.READY_PARTIAL);
+    }
+    else{
+      this.set('state', Redbull.EMPTY);
+    }
   }
 
 }) ;
